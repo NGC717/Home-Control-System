@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>设备控制</title>
+    <script type="text/javascript" src="static/js/jquery-3.6.0.js"></script>
+    <link rel="stylesheet" href="static/css/menu.css">
+    <link rel="shortcut icon" href="favicon.ico" th:href="@{static/favicon.ico}"/>
+</head>
+<style>
+    .show {
+        padding: 0;
+        margin: 0;
+        min-width:1460px;
+        height:355px;
+        background: white;
+        position: absolute;
+        top: 55px;
+    }
+    .switch {
+        /* 定义position为relative，子元素的absolute在这里作参照 */
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+    .switch input {
+        display: none;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+    input:checked+.slider {
+        background-color: chartreuse;
+    }
+    input:focus+.slider {
+        box-shadow: 0 0 1px chartreuse;
+    }
+    input:checked+.slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+</style>
+<body>
+<div style="width: 100%;height: 100%">
+    <div class="leftMenu">
+        <div style="height: 60px;width: 50px"></div>
+        <button class="menu"><a th:href="@{data}">数据监测</a></button>
+        <button class="menu"><a th:href="@{control}">设备控制</a></button>
+        <button class="menu"><a th:href="@{update}">设备管理</a></button>
+        <button class="menu"><a th:href="@{add}">添加设备</a></button>
+        <button class="menu"><a th:href="@{user}">用户中心</a></button>
+        <button class="menu"><a th:href="@{setting}">个人设置</a></button>
+        <button class="menu"><a th:href="@{index}">退出</a></button>
+    </div>
+
+    <div style="position: absolute;left: 50px;">
+        <div style="height: 50px;width:1460px;">
+            <p align="center" style="margin-top: 5px;color: rgb(95, 76, 194);font-size: xx-large">
+                欢迎使用智能家居控制系统
+            </p>
+        </div>
+        <div class="show" id="tableArea">
+            <table id="table" width="1460px" align="center" border="1px">
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>设备名</th>
+                    <th>工作位置</th>
+                    <th>个人备注</th>
+                    <th><span style="color: #cccccc">关</span>/<span style="color: chartreuse">开</span></th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+    function creatTable(data) {
+        var oTab = document.getElementById('table');
+        var oTbody = oTab.tBodies[0];
+
+        for(var i=0;i<data.length;i++){
+            let j = i;
+            var oTr = document.createElement('tr');
+            var oTd = document.createElement('td');
+
+            oTd.innerHTML = i+1;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].name;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].location;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].remark;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+
+            var oL = document.createElement('label');
+            oL.className = 'switch';
+
+            var oC = document.createElement('input');
+            oC.type = 'checkbox';
+            if (data[j].state == 1){
+                oC.checked = true;
+            }
+
+            oC.addEventListener('click',function () {
+                if (this.checked){
+                    $.ajax({
+                        url: "/updateEquipment",
+                        type:'POST',
+                        data:{'check':1,'eId':data[j].id},
+                        dataType: 'text',
+                    })
+                }else {
+                    $.ajax({
+                        url: "/updateEquipment",
+                        type:'POST',
+                        data:{'check':0,'eId':data[j].id},
+                        dataType: 'text',
+                    })
+                }
+            })
+
+            var oD = document.createElement('div');
+            oD.className = 'slider';
+
+            oL.appendChild(oC);
+            oL.appendChild(oD);
+
+            oTd.appendChild(oL)
+            oTd.align = 'center'
+            oTr.appendChild(oTd)
+            oTbody.appendChild(oTr);
+        }
+    }
+    document.onreadystatechange = function (){
+        if (document.readyState === "complete"){
+            $.ajax({
+                url:"/selectEquipment",
+                type:"GET",
+                dataType:"json",
+                success:function (res) {
+                    creatTable(res);
+                }
+            });
+        }
+    }
+</script>
+</html>

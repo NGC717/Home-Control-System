@@ -1,0 +1,29 @@
+mybatis:
+  config-location: classpath:mybatisConfig/mybatisConfig.xml
+  mapper-locations: classpath:mapping/*.xml
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://localhost:3306/house_db?useSSL=false
+    username: root
+    password: super
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+  web:
+    resources:
+      static-locations: classpath:/
+  devtools:
+    restart:
+      enabled: true
+mqtt:
+  url: tcp://127.0.0.1:1883
+  username: admin
+  password: super
+  client:
+    id: CLIENT-JAVA
+  default:
+    topic: DATA-TH

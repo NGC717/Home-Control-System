@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lq.housesystem.mapper.UserMapper">
+
+    <insert id="insertUser">
+        INSERT INTO user VALUES(NULL,#{username},#{password},#{tel},NULL);
+    </insert>
+
+    <insert id="insertEquipment">
+        INSERT INTO equipment VALUES(NULL,#{name},#{ip},#{port},#{location},#{remark},#{type},#{uId},#{state});
+    </insert>
+
+    <update id="updateEquipment">
+        UPDATE equipment SET state = #{param2} WHERE id = #{param1};
+    </update>
+
+    <delete id="deleteEquipment">
+        DELETE FROM equipment WHERE id = #{eid};
+    </delete>
+
+    <select id="selectUser" resultType="com.lq.housesystem.bean.User">
+        SELECT id,username,password,tel,createtime FROM user WHERE username=#{param1} AND password=#{param2};
+    </select>
+
+    <select id="selectEquipmentById" resultType="com.lq.housesystem.bean.Equipment">
+        SELECT id,name,ip,port,location,remark,type,user,state FROM equipment WHERE user=#{uid};
+    </select>
+
+</mapper>

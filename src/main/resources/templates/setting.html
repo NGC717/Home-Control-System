@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"><link rel="icon" href="https://static.jianshukeji.com/highcharts/images/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>个人设置</title>
+    <script src="static/js/highcharts.js"></script>
+    <script src="static/js/exporting.js"></script>
+    <script src="static/js/highcharts-zh_CN.js"></script>
+    <link rel="stylesheet" href="static/css/menu.css">
+</head>
+<style>
+    .show {
+        padding: 0;
+        margin: 0;
+        min-width:1460px;
+        height:355px;
+        background: white;
+        position: absolute;
+        top: 55px;
+    }
+</style>
+<body>
+<div style="width: 100%;height: 100%">
+    <div class="leftMenu">
+        <div style="height: 60px;width: 50px"></div>
+        <button class="menu"><a th:href="@{data}">数据监测</a></button>
+        <button class="menu"><a th:href="@{control}">设备控制</a></button>
+        <button class="menu"><a th:href="@{update}">设备管理</a></button>
+        <button class="menu"><a th:href="@{add}">添加设备</a></button>
+        <button class="menu"><a th:href="@{user}">用户中心</a></button>
+        <button class="menu"><a th:href="@{setting}">个人设置</a></button>
+        <button class="menu"><a th:href="@{index}">退出</a></button>
+    </div>
+    <div style="position: absolute;left: 50px;">
+        <div style="height: 50px;width:1460px;">
+            <p align="center" style="margin-top: 5px;color: rgb(95, 76, 194);font-size: xx-large">
+                欢迎使用智能家居控制系统
+            </p>
+        </div>
+        <div class="show">
+
+        </div>
+    </div>
+</div>
+</body>
+<script>
+</script>
+</html>

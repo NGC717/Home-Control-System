@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        html {
+            height: 100%;
+        }
+        body {
+            background-image: url("static/img/index.jpg");
+            background-size: cover;
+        }
+        .login-container {
+            width: 600px;
+            height: 317px;
+            margin: 0 auto;
+            margin-top: 5%;
+            border-radius: 15px;
+            box-shadow: 0 10px 50px 0px rgb(59, 45, 159);
+            background-color: rgb(95, 76, 194);
+        }
+        .left-container {
+            display: inline-block;
+            width: 330px;
+            border-top-left-radius: 15px;
+            border-bottom-left-radius: 15px;
+            padding: 60px;
+            background-image: linear-gradient(to bottom right, rgb(118, 76, 163), rgb(92, 103, 211));
+        }
+        .title {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 200;
+        }
+        .title span {
+            border-bottom: 3px solid rgb(237, 221, 22);
+        }
+        .input-container {
+            padding: 20px 0;
+        }
+        input {
+            border: 0;
+            background: none;
+            outline: none;
+            color: #fff;
+            margin: 20px 0;
+            display: block;
+            width: 100%;
+            padding: 5px 0;
+            transition: .2s;
+            border-bottom: 1px solid rgb(199, 191, 219);
+        }
+        input:hover {
+            border-bottom-color: #fff;
+        }
+        ::-webkit-input-placeholder {
+            color: rgb(199, 191, 219);
+        }
+        .message-container {
+            font-size: 14px;
+            transition: .2s;
+            color: rgb(199, 191, 219);
+            cursor: pointer;
+        }
+        .message-container:hover {
+            color: #fff;
+        }
+        .right-container {
+            width: 145px;
+            display: inline-block;
+            height: calc(100% - 120px);
+            vertical-align: top;
+            padding: 60px 0;
+        }
+        .regist-container {
+            text-align: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 200;
+        }
+        .regist-container span {
+            border-bottom: 3px solid rgb(237, 221, 22);
+        }
+        .action-container {
+            font-size: 10px;
+            color: #fff;
+            text-align: center;
+            position: relative;
+            top: 200px;
+        }
+        .action-container span {
+            border: 1px solid rgb(237, 221, 22);
+            padding: 10px;
+            display: inline;
+            line-height: 20px;
+            border-radius: 20px;
+            position: absolute;
+            bottom: 10px;
+            left: calc(72px - 20px);
+            transition: .2s;
+            cursor: pointer;
+        }
+        .action-container span:hover {
+            background-color: rgb(237, 221, 22);
+            color: rgb(95, 76, 194);
+        }
+    </style>
+</head>
+<body>
+<p align="center" style="margin-top: 150px;color: rgb(95, 76, 194);font-size: xxx-large">
+    欢迎使用智能家居控制系统
+</p>
+<div class="login-container">
+    <div class="left-container">
+        <div class="title"><span>登录</span></div>
+        <div class="input-container">
+            <form id="form" action="/login" method="post" enctype="multipart/form-data">
+                <input id="username" type="text" name="username" placeholder="用户名" maxlength="8">
+                <input id="password" type="password" name="password" placeholder="密码" maxlength="10">
+            </form>
+        </div>
+        <div class="message-container">4
+            <span>忘记账户/密码</span>
+        </div>
+    </div>
+    <div class="right-container">
+        <div class="regist-container">
+            <span class="regist">
+                <a style="color: white;text-decoration: none" href="/register">注册</a>
+            </span>
+        </div>
+        <div class="action-container">
+            <button id="login" style="background-color: transparent" onclick="login()">
+                <p style="color: white">登录</p></button>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+    function login() {
+
+        var name = document.getElementById("username").value;
+        var pwd = document.getElementById("password").value;
+
+        if (name !== "" && pwd !== ""){
+            var form = document.getElementById("form");
+            form.submit();
+        }else{
+            window.alert("输入不完整")
+        }
+    }
+</script>
+</html>
