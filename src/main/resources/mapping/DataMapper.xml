@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lq.housesystem.mapper.DataMapper">
+    <insert id="insertGas">
+        INSERT INTO gas VALUES(NULL,#{gas},#{ip},#{time});
+    </insert>
+    <insert id="insertHum">
+        INSERT INTO humidity VALUES(NULL,#{humidity},#{ip},#{time});
+    </insert>
+    <insert id="insertLight">
+        INSERT INTO light VALUES(NULL,#{light},#{ip},#{time});
+    </insert>
+    <insert id="insertTemp">
+        INSERT INTO temperature VALUES(NULL,#{temperature},#{ip},#{time});
+    </insert>
+    <delete id="deleteGasById">
+        DELETE FROM gas WHERE id = #{parseInt};
+    </delete>
+    <delete id="deleteTempById">
+        DELETE FROM temperature WHERE id = #{parseInt};
+    </delete>
+    <delete id="deleteHumidityById">
+        DELETE FROM humidity WHERE id = #{parseInt};
+    </delete>
+    <delete id="deleteLightById">
+        DELETE FROM light WHERE id = #{parseInt};
+    </delete>
+
+    <select id="getGasData" resultType="com.lq.housesystem.bean.Gas">
+        SELECT id,gas,ip,time FROM gas ORDER BY id desc limit #{num}
+    </select>
+    <select id="getLightData" resultType="com.lq.housesystem.bean.Light">
+        SELECT id,light,ip,time FROM light ORDER BY id desc limit #{num}
+    </select>
+    <select id="getTempData" resultType="com.lq.housesystem.bean.Temperature">
+        SELECT id,temperature,ip,time FROM temperature ORDER BY id desc limit #{num}
+    </select>
+    <select id="getHumidityData" resultType="com.lq.housesystem.bean.Humidity">
+        SELECT id,humidity,ip,time FROM humidity ORDER BY id desc limit #{num}
+    </select>
+</mapper>

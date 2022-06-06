@@ -1,0 +1,7 @@
+{
+  "name": "HouseSystem",
+  "version": "1.0.0",
+  "devDependencies": {
+    "mqtt": "^4.3.7"
+  }
+}

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>设备编辑</title>
+    <script type="text/javascript" src="static/js/jquery-3.6.0.js"></script>
+    <link rel="stylesheet" href="static/css/menu.css">
+    <link rel="shortcut icon" href="static/favicon.ico" th:href="@{static/favicon.ico}"/>
+</head>
+<style>
+    .show {
+        padding: 0;
+        margin: 0;
+        min-width:1460px;
+        height:355px;
+        background: white;
+        position: absolute;
+        top: 55px;
+    }
+    .switch {
+        /* 定义position为relative，子元素的absolute在这里作参照 */
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+    .switch input {
+        display: none;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+    input:checked+.slider {
+        background-color: chartreuse;
+    }
+    input:focus+.slider {
+        box-shadow: 0 0 1px chartreuse;
+    }
+    input:checked+.slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+</style>
+<body>
+<div style="width: 100%;height: 100%">
+    <div class="leftMenu">
+        <div style="height: 60px;width: 50px"></div>
+        <button class="menu"><a th:href="@{data}">数据监测</a></button>
+        <button class="menu"><a th:href="@{control}">设备控制</a></button>
+        <button class="menu"><a th:href="@{update}">设备管理</a></button>
+        <button class="menu"><a th:href="@{user}">数据管理</a></button>
+        <button class="menu"><a th:href="@{index}">退出</a></button>
+    </div>
+
+    <div style="position: absolute;left: 50px;">
+        <div style="height: 50px;width:1460px;">
+            <p align="center" style="margin-top: 5px;color: rgb(95, 76, 194);font-size: xx-large">
+                欢迎使用智能家居控制系统
+            </p>
+            <form action="/editEquipmentById" enctype="multipart/form-data">
+                <hr>
+                设备名称<input type="text" name="name" id="name" value=""><br>
+                工作位置<input type="text" name="location" id="location" value=""><br>
+                个人备注<input type="text" name="remark" id="remark" value=""><br>
+                <button type="submit">提交更改</button>
+                <hr>
+            </form>
+
+            <form action="/editUpdatePeriod" id="period" enctype="multipart/form-data">
+                <hr>
+                传感器数据更新周期<select name="period">
+                    <option value="A">10秒</option>
+                    <option value="B">30秒</option>
+                    <option value="C">1分钟</option>
+                    <option value="D">10分钟</option>
+                    <option value="E">30分钟</option>
+                    <option value="F">60分钟</option>
+                </select>
+                <br>
+                <button type="submit">提交更改</button>
+                <hr>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+    document.onreadystatechange = function (){
+        if (document.readyState === "complete"){
+            $.ajax({
+                url:"/getEditInfo",
+                type:"GET",
+                dataType:"json",
+                success:function (res) {
+
+                    if (res.type === 5){
+                        var period = document.getElementById("period");
+                        period.style.display = 'none';
+                    }
+
+                    var name = document.getElementById("name");
+                    var location = document.getElementById("location");
+                    var remark = document.getElementById("remark");
+
+                    name.value = res.name;
+                    location.value = res.location;
+                    remark.value = res.remark;
+                }
+            });
+        }
+    }
+</script>
+</html>
