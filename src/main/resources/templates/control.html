@@ -6,7 +6,7 @@
     <title>设备控制</title>
     <script type="text/javascript" src="static/js/jquery-3.6.0.js"></script>
     <link rel="stylesheet" href="static/css/menu.css">
-    <link rel="shortcut icon" href="favicon.ico" th:href="@{static/favicon.ico}"/>
+    <link rel="shortcut icon" href="static/favicon.ico" th:href="@{static/favicon.ico}"/>
 </head>
 <style>
     .show {
@@ -69,9 +69,7 @@
         <button class="menu"><a th:href="@{data}">数据监测</a></button>
         <button class="menu"><a th:href="@{control}">设备控制</a></button>
         <button class="menu"><a th:href="@{update}">设备管理</a></button>
-        <button class="menu"><a th:href="@{add}">添加设备</a></button>
-        <button class="menu"><a th:href="@{user}">用户中心</a></button>
-        <button class="menu"><a th:href="@{setting}">个人设置</a></button>
+        <button class="menu"><a th:href="@{user}">数据管理</a></button>
         <button class="menu"><a th:href="@{index}">退出</a></button>
     </div>
 
@@ -89,6 +87,7 @@
                     <th>设备名</th>
                     <th>工作位置</th>
                     <th>个人备注</th>
+                    <th>设备类型</th>
                     <th><span style="color: #cccccc">关</span>/<span style="color: chartreuse">开</span></th>
                 </tr>
                 </thead>
@@ -97,7 +96,6 @@
         </div>
     </div>
 </div>
-
 </body>
 <script>
     function creatTable(data) {
@@ -130,49 +128,89 @@
 
             oTd = document.createElement('td');
 
-            var oL = document.createElement('label');
-            oL.className = 'switch';
+            var type = data[i].type
 
-            var oC = document.createElement('input');
-            oC.type = 'checkbox';
-            if (data[j].state == 1){
-                oC.checked = true;
+            switch (type) {
+                case 1:
+                    type = "温度传感器";
+                    break;
+                case 2:
+                    type = "湿度传感器";
+                    break;
+                case 3:
+                    type = "光强传感器";
+                    break;
+                case 4:
+                    type = "可燃气传感器";
+                    break;
+                case 5:
+                    type = "开关";
+                    break;
+                case 6:
+                    type = "温湿度传感器";
             }
+            oTd.innerHTML = type;
 
-            oC.addEventListener('click',function () {
-                if (this.checked){
-                    $.ajax({
-                        url: "/updateEquipment",
-                        type:'POST',
-                        data:{'check':1,'eId':data[j].id},
-                        dataType: 'text',
-                    })
-                }else {
-                    $.ajax({
-                        url: "/updateEquipment",
-                        type:'POST',
-                        data:{'check':0,'eId':data[j].id},
-                        dataType: 'text',
-                    })
-                }
-            })
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
 
-            var oD = document.createElement('div');
-            oD.className = 'slider';
+            if (type === "开关"){
+                oTd = document.createElement('td');
+                var oL = document.createElement('label');
+                oL.className = 'switch';
 
-            oL.appendChild(oC);
-            oL.appendChild(oD);
+                var oC = document.createElement('input');
+                oC.type = 'checkbox';
 
-            oTd.appendChild(oL)
-            oTd.align = 'center'
-            oTr.appendChild(oTd)
+                $.ajax({
+                    url: "/getSwitchState",
+                    type:'GET',
+                    data:{'ip':data[j].ip},
+                    dataType:"text",
+                    success:function (res) {
+                        if (res === "1"){
+                            oC.checked = true;
+                        }else {
+                            oC.checked = false;
+                        }
+                    }
+                })
+
+                oC.addEventListener('click',function () {
+                    if (this.checked){
+                        $.ajax({
+                            url: "/turnOn",
+                            type:'POST',
+                            data:{'ip':data[j].ip},
+                            dataType: 'text',
+                        })
+                    }else {
+                        $.ajax({
+                            url: "/turnOff",
+                            type:'POST',
+                            data:{'ip':data[j].ip},
+                            dataType: 'text',
+                        })
+                    }
+                })
+
+                var oD = document.createElement('div');
+                oD.className = 'slider';
+
+                oL.appendChild(oC);
+                oL.appendChild(oD);
+
+                oTd.appendChild(oL);
+                oTd.align = 'center';
+                oTr.appendChild(oTd);
+            }
             oTbody.appendChild(oTr);
         }
     }
     document.onreadystatechange = function (){
         if (document.readyState === "complete"){
             $.ajax({
-                url:"/selectEquipment",
+                url:"/selectEquipmentAdded",
                 type:"GET",
                 dataType:"json",
                 success:function (res) {

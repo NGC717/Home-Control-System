@@ -1,21 +1,33 @@
 package com.lq.housesystem.service;
 
 import com.lq.housesystem.bean.Equipment;
-import com.lq.housesystem.bean.User;
-
 import java.util.List;
 
 public interface UserService {
 
-    void insertUser(User user);
-
-    User selectUser(String userName,String password);
-
     void insertEquipment(Equipment equipment);
 
-    List<Equipment> selectEquipmentById(Integer uId);
+    Equipment selectEquipmentByIp(String eIp);
 
     void deleteEquipment(Integer eId);
 
-    void updateEquipment(Integer eId,Integer state);
+    void updateEquipmentState(Integer eId,Integer state);
+
+    List<Equipment> selectAllEquipments();
+
+    List<Equipment> selectEquipmentAdded();
+
+    void updateEquipment(Equipment equipment);
+
+    Equipment selectEquipmentById(Integer parseInt);
+
+    String selectEquipmentIpById(Integer id);
+
+    String selectEquipmentTurnByIp(String ip);
+
+    void turnEquipmentOnByIp(String ip);
+
+    void turnEquipmentOffByIp(String ip);
+
+    List<Equipment> selectAllEquipmentsExceptSwitch();
 }

@@ -1,35 +1,23 @@
 package com.lq.housesystem.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lq.housesystem.bean.Equipment;
-import com.lq.housesystem.bean.User;
 import com.lq.housesystem.service.UserService;
-import com.lq.housesystem.tools.SwitchType;
+import com.lq.housesystem.tools.JsonTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 public class UserController {
 
     @Autowired
     private UserService userService;
-
-    @RequestMapping("/login")
-    public String login(HttpServletRequest request){
-
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-
-        User user = userService.selectUser(username, password);
-
-        if (user != null){
-            request.getSession().setAttribute("currentUser",user);
-            return "data";
-        }
-        return "index";
-    }
 
     @RequestMapping("/register")
     public String register(HttpServletRequest request){
@@ -38,28 +26,61 @@ public class UserController {
         String password = request.getParameter("password");
         String tel = request.getParameter("tel");
 
-        userService.insertUser(new User(null,username,password,tel,null));
-
-        return "index";
+        return "xxxxxxxxxx";
     }
 
+    //为用户更新搜索到的设备
     @RequestMapping("/addEquipment")
-    public String addEquipment(HttpServletRequest request){
+    @ResponseBody
+    public String addEquipment(HttpServletRequest request) throws JsonProcessingException {
+        Integer eId = Integer.parseInt(request.getParameter("eId"));
+        userService.updateEquipmentState(eId,1);
+        return "success";
+    }
+
+    @RequestMapping("/editEquipment")
+    public String editEquipment(HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+
+        session.setAttribute("editEquipmentId",request.getParameter("eId"));
+
+        return "edit";
+    }
+
+    @RequestMapping("/editEquipmentById")
+    public String editEquipmentById(HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+
+        String eId = session.getAttribute("editEquipmentId").toString();
 
         String name = request.getParameter("name");
-        String ip = request.getParameter("ip");
-        Integer port = Integer.valueOf(request.getParameter("port"));
         String location = request.getParameter("location");
         String remark = request.getParameter("remark");
-        String type = SwitchType.type(Integer.valueOf(request.getParameter("type")));
 
-        User currentUser = (User)request.getSession().getAttribute("currentUser");
+        userService.updateEquipment(new Equipment(Integer.parseInt(eId),name,location,remark));
 
-        Equipment equipment = new Equipment(null,name,ip,port,location,remark,type,currentUser.getId());
-        equipment.setState(0);
+        return "edit";
+    }
 
-        userService.insertEquipment(equipment);
+    @RequestMapping("/getSwitchState")
+    @ResponseBody
+    public String getSwitchState(HttpServletRequest request) throws JsonProcessingException {
+        String ip = request.getParameter("ip");
 
-        return "add";
+        String turn = userService.selectEquipmentTurnByIp(ip);
+
+        return turn;
+    }
+
+    @RequestMapping("/getAllEqExceptSwitch")
+    @ResponseBody
+    public String getAllEqExceptSwitch(HttpServletRequest request) throws JsonProcessingException {
+        List<Equipment> equipmentList = userService.selectAllEquipmentsExceptSwitch();
+
+        String res = JsonTools.creatJsonObj(equipmentList);
+
+        return res;
     }
 }

@@ -7,7 +7,10 @@
     <script src="static/js/highcharts.js"></script>
     <script src="static/js/exporting.js"></script>
     <script src="static/js/highcharts-zh_CN.js"></script>
+    <script type="text/javascript" src="static/js/jquery-3.6.0.js"></script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <link rel="stylesheet" href="static/css/menu.css">
+    <link rel="shortcut icon" href="static/favicon.ico" th:href="@{static/favicon.ico}"/>
 </head>
 <style>
     .show {
@@ -27,9 +30,7 @@
         <button class="menu"><a th:href="@{data}">数据监测</a></button>
         <button class="menu"><a th:href="@{control}">设备控制</a></button>
         <button class="menu"><a th:href="@{update}">设备管理</a></button>
-        <button class="menu"><a th:href="@{add}">添加设备</a></button>
-        <button class="menu"><a th:href="@{user}">用户中心</a></button>
-        <button class="menu"><a th:href="@{setting}">个人设置</a></button>
+        <button class="menu"><a th:href="@{user}">数据管理</a></button>
         <button class="menu"><a th:href="@{index}">退出</a></button>
     </div>
 
@@ -39,89 +40,175 @@
                 欢迎使用智能家居控制系统
             </p>
         </div>
-        <div class="container" id="c1"></div>
-        <div class="container" id="c2"></div>
-        <div class="container" id="c3"></div>
-        <div class="container" id="c4"></div>
+        <div class="show" id="tableArea">
+            <table id="table" width="1460px" align="center" border="1px">
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>设备名</th>
+                    <th>工作位置</th>
+                    <th>设备类型</th>
+                    <th>实时数据</th>
+                    <th>更新时间</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 </body>
 <script>
-    Highcharts.setOptions({
-        global: {
-            useUTC: false
+    var recData = null;
+    function creatTable(data) {
+        var oTab = document.getElementById('table');
+        var oTbody = oTab.tBodies[0];
+
+        for(var i=0;i<data.length;i++){
+            let j = i;
+            var oTr = document.createElement('tr');
+            var oTd = document.createElement('td');
+
+            oTd.innerHTML = i+1;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].name;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].location;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            var type = data[i].type
+            switch (type) {
+                case 1:
+                    type = "温度传感器";
+                    break;
+                case 2:
+                    type = "湿度传感器";
+                    break;
+                case 3:
+                    type = "光强传感器";
+                    break;
+                case 4:
+                    type = "可燃气传感器";
+                    break;
+                case 5:
+                    type = "开关";
+                    break;
+                case 6:
+                    type = "温湿度传感器";
+            }
+            oTd.innerHTML = type;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+                oP = document.createElement('p');
+                oP.id = data[i].ip;
+                oP.innerHTML = '---';
+                oTd.appendChild(oP);
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+                oP = document.createElement('p');
+                oP.id = data[i].ip+"DATE";
+                oP.innerHTML = '---';
+                oTd.appendChild(oP);
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            var oD = document.createElement('div');
+            oD.className = 'slider';
+            oTbody.appendChild(oTr);
         }
-    });
-
-    function activeLastPointToolip(chart) {
-        var points = chart.series[0].points;
-        chart.tooltip.refresh(points[points.length -1]);
+    }
+    document.onreadystatechange = function (){
+        if (document.readyState === "complete"){
+            $.ajax({
+                url:"/getAllEqExceptSwitch",
+                type:"GET",
+                dataType:"json",
+                success:function (res) {
+                    recData = res;
+                    creatTable(res);
+                }
+            });
+        }
     }
 
-    function startChart(chartName,frame) {
-        var chart = Highcharts.chart(chartName, {
-            chart: {
-                type: 'spline',
-                marginRight: 10,
-                events: {
-                    load: function () {
-                        var series = this.series[0],
-                            chart = this;
-                        activeLastPointToolip(chart);
-                        setInterval(function () {
-                            var x = (new Date()).getTime(), // 当前时间
-                                y = 5-Math.random()*10;          // 随机值
-                            series.addPoint([x, y], true, true);
-                            activeLastPointToolip(chart);
-                        }, frame);
-                    }
-                }
-            },
-            title: {
-                text: '实时温度'
-            },
-            xAxis: {
-                type: 'datetime',
-                tickPixelInterval: 150
-            },
-            yAxis: {
-                title: {
-                    text: '摄氏度'
-                }
-            },
-            tooltip: {
-                formatter: function () {
-                    return '<b>' + this.series.name + '</b><br/>' +
-                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                        Highcharts.numberFormat(this.y, 2)+
-                        '℃';
-                }
-            },
-            legend: {
-                enabled: false
-            },
-            series: [{
-                name: '温度',
-                data: (function () {
-                    // 生成随机值
-                    var data = [],
-                        time = (new Date()).getTime(),
-                        i;
-                    for (i = -10; i <= 0; i += 1) {
-                        data.push({
-                            x: time + i * 1000,
-                            y: 0
-                        });
-                    }
-                    return data;
-                }())
-            }]
-        });
+    const options = {
+        clean: true, // true: 清除会话, false: 保留会话
+        connectTimeout: 5000, // 超时时间
+        // 认证信息
+        clientId: 'MQTT-JS',	//客户端ID
+        username: 'admin', //连接用户名
+        password: 'super',
+        // 心跳时间
+        keepalive: 60,
     }
-    startChart('c1',5000)
-    startChart('c2',5000)
-    startChart('c3',5000)
-    startChart('c4',5000)
+
+    const connectUrl = "ws://127.0.0.1:8083/mqtt"
+    const client = mqtt.connect(connectUrl, options)
+
+    client.on('connect', () => {
+        console.log('连接成功')
+        //订阅主题
+        client.subscribe(
+            ['DATA-LIGHT','DATA-TH','DATA-MQ4'],//接受传感器数据
+            { qos: 1 },
+            (err) => {
+                console.log(err || '订阅成功')
+            },
+        );
+    })
+    //失败重连
+    client.on('reconnect', (error) => {
+        console.log('正在重连:', error)
+    })
+    //连接失败
+    client.on('error', (error) => {
+        console.log('连接失败:', error)
+    })
+    //接收消息
+    client.on('message', (topic, message) => {
+        var msg = message.toString();
+        console.log('收到消息：', topic, msg);
+
+        var data = msg.split("-");
+
+        if (data.length < 3){
+            var c1 = document.getElementById(data[1].toString());
+
+            if (topic === "DATA-LIGHT"){
+                c1.innerHTML = data[0] + "Lux";
+                var ca = document.getElementById(data[1].toString()+"DATE");
+                ca.innerHTML = getNowTime();
+            }else if (topic === "DATA-MQ4"){
+                c1.innerHTML = data[0] + "PPM";
+                var cb = document.getElementById(data[1].toString()+"DATE");
+                cb.innerHTML = getNowTime();
+            }
+
+        }else if (topic === "DATA-TH"){
+            var c2 = document.getElementById(data[2].toString());
+            c2.innerHTML = data[0] + "℃" +"-"+data[1] + "%";
+            var cc = document.getElementById(data[2].toString()+"DATE");
+            cc.innerHTML = getNowTime();
+        }
+    })
+
+    function getNowTime() {
+        let date = new Date();
+        let time = date.getHours().toString() +":"+ date.getMinutes().toString()+":"+date.getSeconds();
+        return time;
+    }
 </script>
 </html>

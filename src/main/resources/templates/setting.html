@@ -8,6 +8,7 @@
     <script src="static/js/exporting.js"></script>
     <script src="static/js/highcharts-zh_CN.js"></script>
     <link rel="stylesheet" href="static/css/menu.css">
+    <link rel="shortcut icon" href="static/favicon.ico" th:href="@{static/favicon.ico}"/>
 </head>
 <style>
     .show {
@@ -27,9 +28,7 @@
         <button class="menu"><a th:href="@{data}">数据监测</a></button>
         <button class="menu"><a th:href="@{control}">设备控制</a></button>
         <button class="menu"><a th:href="@{update}">设备管理</a></button>
-        <button class="menu"><a th:href="@{add}">添加设备</a></button>
-        <button class="menu"><a th:href="@{user}">用户中心</a></button>
-        <button class="menu"><a th:href="@{setting}">个人设置</a></button>
+        <button class="menu"><a th:href="@{user}">数据管理</a></button>
         <button class="menu"><a th:href="@{index}">退出</a></button>
     </div>
     <div style="position: absolute;left: 50px;">

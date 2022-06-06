@@ -6,7 +6,7 @@
     <title>设备管理</title>
     <script src="static/js/jquery-3.6.0.js"></script>
     <link rel="stylesheet" href="static/css/menu.css">
-    <link rel="shortcut icon" href="favicon.ico" th:href="@{static/favicon.ico}"/>
+    <link rel="shortcut icon" href="static/favicon.ico" th:href="@{static/favicon.ico}"/>
 </head>
 <style>
     .show {
@@ -18,6 +18,12 @@
         position: absolute;
         top: 55px;
     }
+
+    .button {
+        border-radius: 10px;
+        background: chartreuse;
+        border-color: chartreuse;
+    }
 </style>
 <body>
 <div style="width: 100%;height: 100%">
@@ -26,9 +32,7 @@
         <button class="menu"><a th:href="@{data}">数据监测</a></button>
         <button class="menu"><a th:href="@{control}">设备控制</a></button>
         <button class="menu"><a th:href="@{update}">设备管理</a></button>
-        <button class="menu"><a th:href="@{add}">添加设备</a></button>
-        <button class="menu"><a th:href="@{user}">用户中心</a></button>
-        <button class="menu"><a th:href="@{setting}">个人设置</a></button>
+        <button class="menu"><a th:href="@{user}">数据管理</a></button>
         <button class="menu"><a th:href="@{index}">退出</a></button>
     </div>
 
@@ -45,14 +49,18 @@
                     <th>编号</th>
                     <th>设备名</th>
                     <th>IP地址</th>
-                    <th>端口号</th>
                     <th>工作位置</th>
                     <th>个人备注</th>
+                    <th>状态</th>
                     <th>操作</th>
                 </tr>
                 </thead>
                 <tbody></tbody>
             </table>
+            <div style="text-align: center">
+                <p style="text-align: center;font-size: large">点击按钮搜索设备</p>
+                <button class="button" id="updateBtn">更新</button>
+            </div>
         </div>
     </div>
 </div>
@@ -83,17 +91,46 @@
             oTr.appendChild(oTd);
 
             oTd = document.createElement('td');
-            oTd.innerHTML = data[i].port;
-            oTd.align = 'center';
-            oTr.appendChild(oTd);
-
-            oTd = document.createElement('td');
             oTd.innerHTML = data[i].location;
             oTd.align = 'center';
             oTr.appendChild(oTd);
 
             oTd = document.createElement('td');
             oTd.innerHTML = data[i].remark;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+
+            if (data[i].state === '1'){
+                oTd.innerHTML = '已添加';
+            }else{
+                var oB = document.createElement('input');
+                oB.type = 'button';
+                oB.value = '添加';
+                oB.style.background = 'greenyellow';
+                oB.style.borderColor = 'greenyellow';
+                oB.style.borderRadius = '10px';
+
+                oB.addEventListener("click",function () {
+                    $.ajax({
+                        url:"/addEquipment",
+                        type:"GET",
+                        data:{"eId":data[j].id},
+                        dataType: "text",
+                    });
+
+                    var start = new Date().getTime();
+                    while (true){
+                        if (new Date().getTime() - start > 1000){
+                            location.reload(true);
+                            break;
+                        }
+                    }
+                })
+
+                oTd.appendChild(oB);
+            }
             oTd.align = 'center';
             oTr.appendChild(oTd);
 
@@ -118,6 +155,23 @@
             oTd.appendChild(oB)
             oTd.align = 'center'
             oTr.appendChild(oTd)
+
+            var oB = document.createElement('input');
+            oB.type = 'button';
+            oB.value = '编辑';
+            oB.style.background = "greenyellow";
+            oB.style.borderColor = "greenyellow";
+            oB.style.borderRadius = "10px";
+
+            oB.addEventListener("click",function(){
+                window.location.href = "editEquipment?eId="+data[j].id;
+            });
+
+            oTd.appendChild(oB)
+            oTd.align = 'center'
+            oTr.appendChild(oTd)
+
+
             oTbody.appendChild(oTr);
         }
     }
@@ -132,6 +186,11 @@
                 }
             });
         }
+    }
+
+    let btn = document.getElementById("updateBtn");
+    btn.onclick = function () {
+        location.reload(true);
     }
 </script>
 </html>

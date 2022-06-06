@@ -2,28 +2,47 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.lq.housesystem.mapper.UserMapper">
 
-    <insert id="insertUser">
-        INSERT INTO user VALUES(NULL,#{username},#{password},#{tel},NULL);
-    </insert>
-
     <insert id="insertEquipment">
-        INSERT INTO equipment VALUES(NULL,#{name},#{ip},#{port},#{location},#{remark},#{type},#{uId},#{state});
+        INSERT INTO equipment VALUES(NULL,#{name},#{ip},#{location},#{remark},#{type},#{state},#{turn});
     </insert>
 
-    <update id="updateEquipment">
+    <update id="updateEquipmentState">
         UPDATE equipment SET state = #{param2} WHERE id = #{param1};
+    </update>
+    <update id="updateEquipment">
+        UPDATE equipment SET name = #{name},location = #{location},remark = #{remark} WHERE id = #{id};
+    </update>
+    <update id="turnEquipmentOnByIp">
+        UPDATE equipment SET turn = "1" WHERE ip = #{ip};
+    </update>
+    <update id="turnEquipmentOffByIp">
+        UPDATE equipment SET turn = "0" WHERE ip = #{ip};
     </update>
 
     <delete id="deleteEquipment">
         DELETE FROM equipment WHERE id = #{eid};
     </delete>
 
-    <select id="selectUser" resultType="com.lq.housesystem.bean.User">
-        SELECT id,username,password,tel,createtime FROM user WHERE username=#{param1} AND password=#{param2};
+    <select id="selectEquipmentByIp" resultType="com.lq.housesystem.bean.Equipment">
+        SELECT id,name,ip,location,remark,type,state,turn FROM equipment WHERE ip=#{eIp};
     </select>
-
+    <select id="selectAllEquipments" resultType="com.lq.housesystem.bean.Equipment">
+        SELECT id,name,ip,location,remark,type,state FROM equipment;
+    </select>
+    <select id="selectEquipmentAdded" resultType="com.lq.housesystem.bean.Equipment">
+        SELECT id,name,ip,location,remark,type,state FROM equipment WHERE state = 1;
+    </select>
     <select id="selectEquipmentById" resultType="com.lq.housesystem.bean.Equipment">
-        SELECT id,name,ip,port,location,remark,type,user,state FROM equipment WHERE user=#{uid};
+        SELECT id,name,ip,location,remark,type,state FROM equipment WHERE id = #{id};
+    </select>
+    <select id="selectEquipmentIpById" resultType="java.lang.String">
+        SELECT ip FROM equipment WHERE id = #{id}
+    </select>
+    <select id="selectEquipmentTurnByIp" resultType="java.lang.String">
+        SELECT turn FROM equipment WHERE ip = #{ip}
+    </select>
+    <select id="selectAllEquipmentsExceptSwitch" resultType="com.lq.housesystem.bean.Equipment">
+        SELECT id,name,ip,location,remark,type,state FROM equipment WHERE type != "5";
     </select>
 
 </mapper>

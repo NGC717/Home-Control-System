@@ -2,17 +2,16 @@ package com.lq.housesystem.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lq.housesystem.bean.Equipment;
-import com.lq.housesystem.bean.User;
+import com.lq.housesystem.bean.*;
+import com.lq.housesystem.service.DataService;
 import com.lq.housesystem.service.UserService;
+import com.lq.housesystem.tools.JsonTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
+import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class DataController {
@@ -20,17 +19,22 @@ public class DataController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private DataService dataService;
+
     @RequestMapping("/selectEquipment")
     public String selectEquipment(HttpServletRequest request) throws JsonProcessingException {
-        User currentUser = (User)request.getSession().getAttribute("currentUser");
-
-        List<Equipment> equipments = userService.selectEquipmentById(currentUser.getId());
-
+        List<Equipment> equipments = userService.selectAllEquipments();
         ObjectMapper mapper = new ObjectMapper();
-
         String value = mapper.writeValueAsString(equipments);
-
         return value;
+    }
+
+    //搜索用户已添加设备
+    @RequestMapping("/selectEquipmentAdded")
+    public String selectEquipmentAdded(HttpServletRequest request) throws JsonProcessingException {
+        List<Equipment> equipmentList = userService.selectEquipmentAdded();
+        return JsonTools.creatJsonObj(equipmentList);
     }
 
     @RequestMapping("/deleteEquipment")
@@ -46,30 +50,108 @@ public class DataController {
         Integer check = Integer.valueOf(request.getParameter("check"));
         Integer eId = Integer.valueOf(request.getParameter("eId"));
 
-        userService.updateEquipment(eId,check);
+        userService.updateEquipmentState(eId,check);
 
         return null;
     }
 
-    @RequestMapping("/insertData")
-    public String insertData(HttpServletRequest request) throws JsonProcessingException {
+    @RequestMapping("/getEditEquipment")
+    public String getEditEquipment(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        String id = session.getAttribute("editEquipmentId").toString();
+        return id;
+    }
 
-        Map<String,String> temp = new HashMap<>();
-        Map<String,String> hum = new HashMap<>();
+    @RequestMapping("/getEditInfo")
+    public String getEditInfo(HttpServletRequest request) throws JsonProcessingException {
+        HttpSession session = request.getSession();
+        String id = session.getAttribute("editEquipmentId").toString();
 
-        temp.put("type","1");
-        temp.put("data","25.12");
-        temp.put("mac","DS54F5SD4FSD");
+        Equipment equipment = userService.selectEquipmentById(Integer.parseInt(id));
 
-        hum.put("type","2");
-        hum.put("data","34.6");
-        hum.put("mac","S5DSA4D4AS6SAD");
+        String e = JsonTools.creatJsonObj(equipment);
 
-        ObjectMapper mapper = new ObjectMapper();
+        return e;
+    }
 
-        String tempData = mapper.writeValueAsString(temp);
-        String humData = mapper.writeValueAsString(hum);
+    @RequestMapping("/getGasData")
+    public String getGasVal(HttpServletRequest request) throws JsonProcessingException {
+
+        List<Gas> gasData = dataService.getGasData(10);
+
+        String data = JsonTools.creatJsonObj(gasData);
+
+        return data;
+    }
+
+    @RequestMapping("/getTempData")
+    public String getTempData(HttpServletRequest request) throws JsonProcessingException {
+
+        List<Temperature> data = dataService.getTempData(10);
+
+        String res = JsonTools.creatJsonObj(data);
+
+        return res;
+    }
+
+    @RequestMapping("/getHumidityData")
+    public String getHumidityData(HttpServletRequest request) throws JsonProcessingException {
+
+        List<Humidity> data = dataService.getHumidityData(10);
+
+        String res = JsonTools.creatJsonObj(data);
+
+        return res;
+    }
+
+    @RequestMapping("/getLightData")
+    public String getLightData(HttpServletRequest request) throws JsonProcessingException {
+
+        List<Light> data = dataService.getLightData(10);
+
+        String res = JsonTools.creatJsonObj(data);
+
+        return res;
+    }
+
+    @RequestMapping("/deleteLight")
+    public String deleteLight(HttpServletRequest request) throws JsonProcessingException {
+
+        String id = request.getParameter("id");
+
+        dataService.deleteLightById(Integer.parseInt(id));
 
         return null;
     }
+
+    @RequestMapping("/deleteGas")
+    public String deleteGas(HttpServletRequest request) throws JsonProcessingException {
+
+        String id = request.getParameter("id");
+
+        dataService.deleteGasById(Integer.parseInt(id));
+
+        return null;
+    }
+
+    @RequestMapping("/deleteTemp")
+    public String deleteTemp(HttpServletRequest request) throws JsonProcessingException {
+
+        String id = request.getParameter("id");
+
+        dataService.deleteTempById(Integer.parseInt(id));
+
+        return null;
+    }
+
+    @RequestMapping("/deleteHumidity")
+    public String deleteHumidity(HttpServletRequest request) throws JsonProcessingException {
+
+        String id = request.getParameter("id");
+
+        dataService.deleteHumidityById(Integer.parseInt(id));
+
+        return null;
+    }
+
 }

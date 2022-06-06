@@ -3,11 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>用户中心</title>
+    <title>数据管理</title>
+    <script type="text/javascript" src="static/js/jquery-3.6.0.js"></script>
     <script src="static/js/highcharts.js"></script>
     <script src="static/js/exporting.js"></script>
     <script src="static/js/highcharts-zh_CN.js"></script>
     <link rel="stylesheet" href="static/css/menu.css">
+    <link rel="shortcut icon" href="static/favicon.ico" th:href="@{static/favicon.ico}"/>
 </head>
 <style>
     .show {
@@ -27,9 +29,7 @@
         <button class="menu"><a th:href="@{data}">数据监测</a></button>
         <button class="menu"><a th:href="@{control}">设备控制</a></button>
         <button class="menu"><a th:href="@{update}">设备管理</a></button>
-        <button class="menu"><a th:href="@{add}">添加设备</a></button>
-        <button class="menu"><a th:href="@{user}">用户中心</a></button>
-        <button class="menu"><a th:href="@{setting}">个人设置</a></button>
+        <button class="menu"><a th:href="@{user}">数据管理</a></button>
         <button class="menu"><a th:href="@{index}">退出</a></button>
     </div>
 
@@ -39,12 +39,314 @@
                 欢迎使用智能家居控制系统
             </p>
         </div>
-        <div class="show">
-
+        <div class="show" id="tableArea">
+            <table id="table1" width="1460px" align="center" border="1px">
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>IP</th>
+                    <th>数值</th>
+                    <th>时间</th>
+                    <th>管理</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <table id="table2" width="1460px" align="center" border="1px">
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>IP</th>
+                    <th>数值</th>
+                    <th>时间</th>
+                    <th>管理</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <table id="table3" width="1460px" align="center" border="1px">
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>IP</th>
+                    <th>数值</th>
+                    <th>时间</th>
+                    <th>管理</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <table id="table4" width="1460px" align="center" border="1px">
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>IP</th>
+                    <th>数值</th>
+                    <th>时间</th>
+                    <th>管理</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 </div>
 </body>
 <script>
+    function creatTable1(data,unit) {
+        var oTab = document.getElementById("table1");
+        var oTbody = oTab.tBodies[0];
+
+        for(var i=0;i<data.length;i++){
+            let j = i;
+            var oTr = document.createElement('tr');
+            var oTd = document.createElement('td');
+
+            oTd.innerHTML = i+1;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].ip;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].light + unit;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = getLocalTime(data[i].time);
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+                var oB = document.createElement('input');
+                oB.type = 'button';
+                oB.value = '删除';
+                oB.style.background = 'greenyellow';
+                oB.style.borderColor = 'greenyellow';
+                oB.style.borderRadius = '10px';
+
+                oB.addEventListener("click",function () {
+                    $.ajax({
+                        url: "/deleteLight",
+                        type: "GET",
+                        data: {"id": data[j].id},
+                        dataType: "text",
+                    });
+                })
+
+            oTd.appendChild(oB);
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTbody.appendChild(oTr);
+        }
+    }
+
+    function creatTable2(data,unit) {
+        var oTab = document.getElementById("table2");
+        var oTbody = oTab.tBodies[0];
+
+        for(var i=0;i<data.length;i++){
+            let j = i;
+            var oTr = document.createElement('tr');
+            var oTd = document.createElement('td');
+
+            oTd.innerHTML = i+1;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].ip;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].gas + unit;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = getLocalTime(data[i].time);
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            var oB = document.createElement('input');
+            oB.type = 'button';
+            oB.value = '删除';
+            oB.style.background = 'greenyellow';
+            oB.style.borderColor = 'greenyellow';
+            oB.style.borderRadius = '10px';
+
+            oB.addEventListener("click",function () {
+                $.ajax({
+                    url: "/deleteGas",
+                    type: "GET",
+                    data: {"id": data[j].id},
+                    dataType: "text",
+                });
+            })
+
+            oTd.appendChild(oB);
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+
+            oTbody.appendChild(oTr);
+        }
+    }
+
+    function creatTable3(data,unit) {
+        var oTab = document.getElementById("table3");
+        var oTbody = oTab.tBodies[0];
+
+        for(var i=0;i<data.length;i++){
+            let j = i;
+            var oTr = document.createElement('tr');
+            var oTd = document.createElement('td');
+
+            oTd.innerHTML = i+1;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].ip;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].temperature + unit;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = getLocalTime(data[i].time);
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            var oB = document.createElement('input');
+            oB.type = 'button';
+            oB.value = '删除';
+            oB.style.background = 'greenyellow';
+            oB.style.borderColor = 'greenyellow';
+            oB.style.borderRadius = '10px';
+
+            oB.addEventListener("click",function () {
+                $.ajax({
+                    url: "/deleteTemp",
+                    type: "GET",
+                    data: {"id": data[j].id},
+                    dataType: "text",
+                });
+            })
+
+            oTd.appendChild(oB);
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTbody.appendChild(oTr);
+        }
+    }
+
+    function creatTable4(data,unit) {
+        var oTab = document.getElementById("table4");
+        var oTbody = oTab.tBodies[0];
+
+        for(var i=0;i<data.length;i++){
+            let j = i;
+            var oTr = document.createElement('tr');
+            var oTd = document.createElement('td');
+
+            oTd.innerHTML = i+1;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].ip;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = data[i].humidity + unit;
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            oTd.innerHTML = getLocalTime(data[i].time);
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTd = document.createElement('td');
+            var oB = document.createElement('input');
+            oB.type = 'button';
+            oB.value = '删除';
+            oB.style.background = 'greenyellow';
+            oB.style.borderColor = 'greenyellow';
+            oB.style.borderRadius = '10px';
+
+            oB.addEventListener("click",function () {
+                $.ajax({
+                    url: "/deleteHumidity",
+                    type: "GET",
+                    data: {"id": data[j].id},
+                    dataType: "text",
+                });
+            })
+
+            oTd.appendChild(oB);
+            oTd.align = 'center';
+            oTr.appendChild(oTd);
+
+            oTbody.appendChild(oTr);
+        }
+    }
+
+    function getLocalTime(str) {
+        return new Date(parseInt(str)).toLocaleString().replace(/:\d{1,2}$/,'');
+    }
+    document.onreadystatechange = function (){
+        if (document.readyState === "complete"){
+            $.ajax({
+                url:"/getLightData",
+                type:"GET",
+                dataType:"json",
+                success:function (res) {
+                    creatTable1(res,"Lux");
+                }
+            });
+
+            $.ajax({
+                url:"/getGasData",
+                type:"GET",
+                dataType:"json",
+                success:function (res) {
+                    creatTable2(res,"PPM");
+                }
+            });
+
+            $.ajax({
+                url:"/getTempData",
+                type:"GET",
+                dataType:"json",
+                success:function (res) {
+                    creatTable3(res,"℃");
+                }
+            });
+
+            $.ajax({
+                url:"/getHumidityData",
+                type:"GET",
+                dataType:"json",
+                success:function (res) {
+                    creatTable4(res,"%");
+                }
+            });
+        }
+    }
 </script>
 </html>
