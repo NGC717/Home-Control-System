@@ -1,4 +1,4 @@
-#Simple Home System
+# Home-Control-and-Environment-Data-Monitoring-System
 
 Abstract:
 In terms of hardware, the system adopts ESP8266 WiFi module, MQ4 gas sensor module, DHT11 temperature and humidity sensor module, photosensitive resistance module and relay module. After each sensor module is connected with ESP8266, it establishes connection with home router through WiFi.Java server, mysql database service, EMQX MQTT server service have been established in software.Relay control and sensor data reading management are completed by sending and receiving information at hardware level and software level.Java server program based on Spring Boot framework.
